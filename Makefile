@@ -1,4 +1,4 @@
-SRC = flash_erase.c nandwrite.c ofgwrite.c ubiformat.c ubiattach.c ubiutils-common.c libubigen.c libscan.c libubi.c flashcp.c ubidetach.c ubiupdatevol.c fb.c flash_ubi_jffs2.c flash_ext4.c cmdline_parser.c
+SRC = flash_erase.c nandwrite.c ofgwrite.c ubiformat.c ubiattach.c ubiutils-common.c libubigen.c libscan.c libubi.c flashcp.c ubidetach.c ubiupdatevol.c fb.c flash_ubi_jffs2.c flash_ext4.c cmdline_parser.c dream_bootblob.c dream_kernel.c dream_backup.c dream_lcd.c
 
 SRC_BUSYBOX= busybox/fdisk.c \
 	busybox/cp.c \
@@ -104,6 +104,9 @@ $(OUT_LIB): $(LIBOBJ)
 
 $(OUT): $(OBJ) $(OBJ_BUSYBOX) $(OUT_LIB)
 	$(CC) -o $@ $(OBJ) $(OBJ_BUSYBOX) $(LDFLAGS)
+
+dream_kernel.o: dream_kernel.h dream_bootblob.h dream_lcd.h
+dream_lcd.o: dream_lcd.h
 
 clean:
 	rm -f $(LIBOBJ) $(OUT_LIB) $(OBJ) $(OBJ_BUSYBOX) $(OUT)
