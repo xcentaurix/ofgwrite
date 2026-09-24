@@ -263,8 +263,10 @@ int set_screeninfo()
 		if (ioctl(g_fbFd, FBIOPUT_VSCREENINFO, &g_screeninfo_var) == 0)
 		{
 			applied = 1;
+			my_printf("set_screeninfo: FBIOPUT_VSCREENINFO accepted yres_virtual=%u (attempt %d)\n", try_yvirt[i], i);
 			break;
 		}
+		my_printf("set_screeninfo: FBIOPUT_VSCREENINFO rejected yres_virtual=%u (attempt %d): %s\n", try_yvirt[i], i, strerror(errno));
 	}
 
 	/* Always read back what the kernel accepted. */
@@ -274,6 +276,9 @@ int set_screeninfo()
 	g_fbPages = (g_screeninfo_var.yres ? (int)(g_screeninfo_var.yres_virtual / g_screeninfo_var.yres) : 1);
 	if (g_fbPages < 1)
 		g_fbPages = 1;
+
+	my_printf("set_screeninfo: applied=%d yres_virtual=%u yoffset=%u g_fbPages=%d\n",
+		applied, g_screeninfo_var.yres_virtual, g_screeninfo_var.yoffset, g_fbPages);
 
 	if (!applied)
 	{
@@ -353,7 +358,10 @@ int mmap_fb()
 	{
 		unsigned int max_yoff = (unsigned int)(g_fbPages - 1) * g_screeninfo_var.yres;
 		if (g_screeninfo_var.yoffset > max_yoff)
+		{
+			my_printf("mmap_fb: clamping out-of-range yoffset=%u (max %u) to 0\n", g_screeninfo_var.yoffset, max_yoff);
 			g_screeninfo_var.yoffset = 0;
+		}
 	}
 
 	return 1;
